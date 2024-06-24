@@ -1,5 +1,10 @@
 from torch import nn
-from components import Encoder, Decoder, InputEmbeddings, PositionalEncoding, ProjectionLayer
+from Components.encoderBlock import *
+from Components.decoderBlock import *
+from Components.inputEmbeddings import *
+from Components.positionalEncoding import *
+from Components.projectionLayer import *
+
 
 class Transformer(nn.Module):
     def __init__(self, encoder: Encoder, decoder: Decoder, src_embed: InputEmbeddings, tgt_embed: InputEmbeddings, src_pos: PositionalEncoding, tgt_pos: PositionalEncoding, projection_layer: ProjectionLayer) -> None:

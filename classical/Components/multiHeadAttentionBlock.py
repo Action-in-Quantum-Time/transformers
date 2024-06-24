@@ -1,8 +1,10 @@
+import torch
 import numpy as np
 from torch import nn
+import torch.nn.functional as F
 
 class MultiHeadAttentionBlock(nn.Module):
-    def __init__(self, d_model: int, h: int, dropout: float) -> None:
+    def __init__(self, d_model: int, h: int = 8, dropout: float = 0.1) -> None:
         super().__init__()
         self.d_model = d_model
         self.h = h
@@ -47,3 +49,22 @@ class MultiHeadAttentionBlock(nn.Module):
         x = x.transpose(1, 2).contiguous().view(x.shape[0], -1, self.h * self.d_k)
 
         return self.w_o(x)
+    
+class AttentionBlock(nn.Module):
+    def __init__(self, seq_len=200):
+        super().__init__()
+        self.queries = nn.Linear(seq_len, seq_len)
+        self.keys = nn.Linear(seq_len, seq_len)
+        self.values = nn.Linear(seq_len, seq_len)
+
+    def forward(self, x, mask=True):
+        q = self.queries(x).reshape(x.shape[0], x.shape[1], 1)
+        k = self.keys(x).reshape(x.shape[0], x.shape[1], 1)
+        v = self.values(x).reshape(x.shape[0], x.shape[1], 1)
+        scores = torch.bmm(q, k.transpose(-2, -1))
+        if mask:
+            maskmat = torch.tril(torch.ones((x.shape[1], x.shape[1])))
+            scores = scores.masked_fill(maskmat == 0, -1e9)
+        attention_weights = F.softmax(scores, dim=-1)
+        output = torch.bmm(attention_weights, v)
+        return output.reshape(output.shape[0], output.shape[1])    
