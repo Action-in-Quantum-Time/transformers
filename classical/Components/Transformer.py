@@ -1,5 +1,5 @@
 from torch import nn
-from Components import Encoder, Decoder, InputEmbeddings, PositionalEncoding, ProjectionLayer
+from components import Encoder, Decoder, InputEmbeddings, PositionalEncoding, ProjectionLayer
 
 class Transformer(nn.Module):
     def __init__(self, encoder: Encoder, decoder: Decoder, src_embed: InputEmbeddings, tgt_embed: InputEmbeddings, src_pos: PositionalEncoding, tgt_pos: PositionalEncoding, projection_layer: ProjectionLayer) -> None:

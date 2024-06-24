@@ -1,5 +1,5 @@
 from torch import nn
-from Components import MultiHeadAttentionBlock, FeedForwardBlock, ResidualConnection, LayerNormalization
+from components import MultiHeadAttentionBlock, FeedForwardBlock, ResidualConnection, LayerNormalization
 
 class EncoderBlock(nn.Module):
     def __init__(self, self_attention_block: MultiHeadAttentionBlock, feed_forward_block: FeedForwardBlock, dropout: float) -> None:
