@@ -1,0 +1,1 @@
+{"data_name": "beer", "case_name": "torpl", "major_version": 4, "minor_version": 2, "n_layers": 2, "n_latent": 7, "n_trash": 1, "n_extra": 0, "rot": "Ry", "cost_type": "L1", "cost_yscale": "linear", "shuffle_interv": 0, "log_interv": 5, "opt_name": "Adam", "epochs": 200, "shots": 100, "seed": 2024}
