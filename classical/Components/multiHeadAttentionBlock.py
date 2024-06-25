@@ -39,7 +39,7 @@ class MultiHeadAttentionBlock(nn.Module):
         value = self.w_v(v) # (Batch, seq_len, d_model) --> (Batch, seq_len, d_model)
 
         # (Batch, seq_len, d_model) --> (Batch, seq_len, h, d_k) --> (Batch, seq_len, d_k)
-        query = query.view(query.shapr[0], query.shape[1], self.h, self.d_k).transpose(1, 2)
+        query = query.view(query.shape[0], query.shape[1], self.h, self.d_k).transpose(1, 2)
         key = query.view(key.shape[0], key.shape[1], self.h, self.d_k).transpose(1, 2)
         value = value.view(value.shape[0], value.shape[1], self.h, self.d_k).transpose(1, 2)
 
