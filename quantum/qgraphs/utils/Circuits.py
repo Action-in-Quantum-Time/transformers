@@ -11,7 +11,7 @@ sys.path.append('..')
 sys.path
 
 import matplotlib.pyplot as plt
-import numpy as np
+import numpy as numpy_np
 import pylab
 import math
 from IPython.display import clear_output
@@ -29,12 +29,16 @@ import torch
 
 ##### Utilities
 
+### Bit to list translation for data entry and state interpretation
+#   Note: PennyLane interprets qubits state in reverse order than Qiskit
+#         These functions are a copy of functions in Circuits.py
+
 ### Transform int number to a list of bits, bit 0 comes first
 def bin_int_to_list(a, n_bits):
     a = int(a)
     a_list = [int(i) for i in f'{a:0{n_bits}b}']
     #a_list.reverse()
-    return np.array(a_list)
+    return numpy_np.array(a_list)
 
 ### Transform a list of bits to an int number, bit 0 comes first
 def bin_list_to_int(bin_list):

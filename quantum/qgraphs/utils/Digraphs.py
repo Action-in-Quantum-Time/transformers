@@ -26,6 +26,9 @@ set_loglevel("error")
 from IPython.display import clear_output
 
 
+##### Graph drawing
+
+
 ### Draw a digraph
 def draw_digraph(G, ax=None, weight_prec=3, font_size=12):
     pos = nx.shell_layout(G)
@@ -65,6 +68,9 @@ def draw_weighted_digraph(G, attr_name, ax=None, weight_prec=3, font_size=12):
     )
 
 
+##### Graph saving and loading
+
+
 ### Saving of a graph to a file
 def save_digraph(G, fpath, vers=0):
     os.makedirs(os.path.dirname(fpath), exist_ok=True)
@@ -100,3 +106,49 @@ def digraph_to_adjmat(G):
 ### Return digraph details
 def digraph_details(G):
     return nx.node_link_data(G)
+
+
+##### Graph generation
+
+
+### Convert an adjacency of a unweighted graph to adjacency of a weighted graph
+#   Two methods of generating weights:
+#   - rand: random weights are generated
+#   - scale: existing weights are scaled
+def digraph_adj_weigh(unw_adj, method='rand'):
+    w_adj = unw_adj.copy().astype(float)
+    for r in range(unw_adj.shape[0]):
+        r_sum = sum(unw_adj[r])
+        r_nz = np.count_nonzero(unw_adj[r])
+        if r_sum != 0.0:
+            # Edges available - generate weights
+            if method == 'rand':
+                nz_weights = np.random.random(r_nz)
+            else:
+                nz_weights = np.array([num*1.0 for num in unw_adj[r] if num])
+            nz_weights /= nz_weights.sum()
+            w_no = 0
+            for c in range(unw_adj.shape[1]):
+                if unw_adj[r, c] > 0:
+                    w_adj[r, c] = nz_weights[w_no]
+                    w_no += 1
+    return w_adj
+
+### Expand a weighted digraph to eliminate vertices with out-dgree=0
+def digraph_adj_expand(w_adj):
+    exp_adj = w_adj.copy() #.toarray()
+    for r in range(w_adj.shape[0]):
+        r_sum = np.count_nonzero(w_adj[r])
+        if r_sum == 0:
+            # No outgoing links - create a loop
+            exp_adj[r, r] = 1.0
+    return exp_adj
+
+### Prepare a quantum digraph for quantum modeling
+#   Convert an undirected graph into QGraph
+def digraph_expanded_and_weighed(g, method='rand'):
+    g_adj = nx.adjacency_matrix(g).todense()
+    g_adj_expanded = digraph_adj_expand(g_adj)
+    g_adj_weighed = digraph_adj_weigh(g_adj_expanded, method=method)
+    g_new = nx.DiGraph(g_adj_weighed)
+    return g_new
