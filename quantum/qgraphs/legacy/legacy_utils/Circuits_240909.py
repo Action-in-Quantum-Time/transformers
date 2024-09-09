@@ -29,20 +29,6 @@ import torch
 
 ##### Utilities
 
-### Transform int number to a list of bits, bit 0 comes first
-def bin_int_to_list(a, n_bits):
-    a = int(a)
-    a_list = [int(i) for i in f'{a:0{n_bits}b}']
-    #a_list.reverse()
-    return np.array(a_list)
-
-### Transform a list of bits to an int number, bit 0 comes first
-def bin_list_to_int(bin_list):
-    b = list(bin_list)
-    #b.reverse()
-    return int("".join(map(str, b)), base=2)
-
-
 ### Draw a circuit
 #   Lots of styles apply, e.g. 'black_white', 'black_white_dark', 'sketch', 
 #     'pennylane', 'pennylane_sketch', 'sketch_dark', 'solarized_light', 'solarized_dark', 
@@ -79,16 +65,6 @@ def sequence_encoder(wires, data):
             qml.RY(0, wires=w)
         else:
             qml.RY(data[w], wires=w)
-            
-### Creates a number encoder
-#   wires: list/array of wires to be used
-#   numbers: a list with a single number to be basis encoded (can be less than wires)
-def number_encoder(wires, num):
-    n_wires = len(wires)
-    digits = bin_int_to_list(num, n_wires)
-    n_digits = len(digits)
-
-    qml.BasisEmbedding(digits, wires)
             
 
 ##### Model components
