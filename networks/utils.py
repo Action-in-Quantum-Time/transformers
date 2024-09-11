@@ -43,20 +43,3 @@ def save_csv(file_name: str):
     with open(file_name, 'w') as f:
         write = csv.writer(f)
         write.writerow(best_comm)
-
-
-
-
-
-
-
-for _ in range(1000):
-    g_comm = g.community_leiden(objective_function="modularity", n_iterations=-1)
-    if g_comm.modularity > max_mod:
-        max_mod = g_comm.modularity
-        best_comm = g_comm.membership
-
-import csv
-with open('karate_community', 'w') as f:
-    write = csv.writer(f)
-    write.writerow(best_comm)

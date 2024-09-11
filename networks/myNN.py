@@ -4,7 +4,7 @@ from torch_geometric.nn.conv import GCNConv, GATConv
 
 import torch.nn.functional as F
 
-import torchmetrics
+# import torchmetrics
 
 # accuracy_score = torchmetrics.classification.Accuracy(task="binary")
 #accuracy_score = torchmetrics.classification.AveragePrecision(task="binary")
