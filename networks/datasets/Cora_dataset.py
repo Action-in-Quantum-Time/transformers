@@ -16,7 +16,3 @@ print(f'Training node label rate: {int(data.train_mask.sum()) / data.num_nodes:.
 print(f'Contains isolated nodes: {data.has_isolated_nodes()}')
 print(f'Contains self-loops: {data.has_self_loops()}')
 print(f'Is undirected: {data.is_undirected()}')
-# print(data)
-# print(data.train_mask)
-# print(data.y)
-
