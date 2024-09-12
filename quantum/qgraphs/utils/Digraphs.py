@@ -30,26 +30,48 @@ from IPython.display import clear_output
 
 
 ### Draw a digraph
-def draw_digraph(G, ax=None, weight_prec=3, font_size=12):
+def draw_digraph(G, ax=None, weight_prec=3, font_size=12, 
+                 rcParams=(8, 6), save_plot=None):
+    
+    # Set graph plotting parameter
     pos = nx.shell_layout(G)
     # pos = nx.kamada_kawai_layout(G)
     # pos = nx.planar_layout(G)
     # pos = nx.spring_layout(G)
     # cstyle = "arc3,rad=0.3"
     cstyle = "arc3"
+    
+    # Plot graph
+    if rcParams is not None:
+        plt.rcParams["figure.figsize"] = rcParams
+
     nx.draw_networkx_nodes(G, pos, ax=ax)
     nx.draw_networkx_labels(G, pos, font_size=font_size, ax=ax)
     nx.draw_networkx_edges(G, pos, edge_color="grey", ax=ax, connectionstyle=cstyle)
 
+    # Final charting
+    if save_plot is not None:
+        os.makedirs(os.path.dirname(save_plot), exist_ok=True)
+        plt.savefig(save_plot, format='eps')
+    plt.draw()
+
 
 ### Draw a weighted digraph
-def draw_weighted_digraph(G, attr_name, ax=None, weight_prec=3, font_size=12):
+def draw_weighted_digraph(G, attr_name, ax=None, weight_prec=3, font_size=12, 
+                          rcParams=(8, 6), save_plot=None):
+    
+    # Set graph plotting parameter
     pos = nx.shell_layout(G)
     # pos = nx.kamada_kawai_layout(G)
     # pos = nx.planar_layout(G)
     # pos = nx.spring_layout(G)
     # cstyle = "arc3,rad=0.3"
     cstyle = "arc3"
+
+    # Plot graph
+    if rcParams is not None:
+        plt.rcParams["figure.figsize"] = rcParams
+
     nx.draw_networkx_nodes(G, pos, ax=ax)
     nx.draw_networkx_labels(G, pos, font_size=font_size, ax=ax)
     nx.draw_networkx_edges(G, pos, edge_color="grey", ax=ax, connectionstyle=cstyle)
@@ -66,6 +88,12 @@ def draw_weighted_digraph(G, attr_name, ax=None, weight_prec=3, font_size=12):
         verticalalignment='baseline', # top, bottom, center, center_baseline
         ax=ax,
     )
+
+    # Final charting
+    if save_plot is not None:
+        os.makedirs(os.path.dirname(save_plot), exist_ok=True)
+        plt.savefig(save_plot, format='eps')
+    plt.draw()
 
 
 ##### Graph saving and loading
