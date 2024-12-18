@@ -234,11 +234,11 @@ def mae_plot(mae_train_vals, mae_valid_vals, rcParams=(8, 4), yscale='linear',
 #   If log_interv is a number, it applies to all curves
 #   If it is a list, each number applies to its curve
 def multi_perform_plot(pvals, rcParams=(8, 4), yscale='linear', 
-                  backplot=False, smooth_weight=0.9, save_plot=None,
-                  title='Performance vs iteration', meas_type='Cost', 
+                  backplot=False, smooth_weight=0.9, save_plot=None, show_plot=True,
+                  title='Performance vs iteration', xlabel='iteration', meas_type='cost', 
                   meas_min=True, labels=[], back_color='linen',
                   line_styles=None, line_cols=None, col_cycle_rep=5,
-                  xlim=None, ylim=None, log_interv=1):
+                  xlim=None, ylim=None, log_interv=1, prec=4):
     
     if not pvals: # Empty list of curves
         return
@@ -250,6 +250,9 @@ def multi_perform_plot(pvals, rcParams=(8, 4), yscale='linear',
         print('*** log_interv must be an interger or a list')
         return
 
+    if type(meas_min) is not list:
+        meas_min = [meas_min] * len(pvals)
+
     prop_cycle = plt.rcParams['axes.prop_cycle']
     default_cols = prop_cycle.by_key()['color']
     if line_cols is None: line_cols = default_cols*col_cycle_rep
@@ -257,9 +260,8 @@ def multi_perform_plot(pvals, rcParams=(8, 4), yscale='linear',
 
     iter = max([len(p) for p in pvals])*max(log_int_list)
     plt.rcParams["figure.figsize"] = rcParams
-    plt.title(f'{title} '+('with smoothing ' if smooth_weight>0 else ' ')+
-              f'(iter# {iter})')
-    plt.xlabel(f'Iteration')
+    plt.title(f'{title}'+f' (smooth={np.round(float(smooth_weight), 2)})' if smooth_weight>0 else f'{title}')
+    plt.xlabel(xlabel)
     plt.ylabel(meas_type)
     if xlim is not None: plt.xlim(xlim)
     if ylim is not None: plt.ylim(ylim)
@@ -268,23 +270,26 @@ def multi_perform_plot(pvals, rcParams=(8, 4), yscale='linear',
         if backplot:
             plt.plot([x*log_int_list[i] for x in range(len(pvals[i]))], pvals[i], color=back_color)
     for i in range(len(pvals)):
-        if meas_min:
+        if meas_min[i]:
             lim = 'min'
-            sel_val = np.round(min(pvals[i]), 3)
+            sel_val = np.round(min(pvals[i]), prec)
             sel_x = np.argmin(pvals[i])
         else:
             lim = 'max'
-            sel_val = np.round(max(pvals[i]), 3)
+            sel_val = np.round(max(pvals[i]), prec)
             sel_x = np.argmax(pvals[i])
         smooth_vals = smooth_movtarg(pvals[i], smooth_weight)
         sel_lab = labels[i] if labels else f'{i}'
         plt.plot([x*log_int_list[i] for x in range(len(pvals[i]))], smooth_vals, 
                  linestyle=line_styles[i], color=line_cols[i],
-                 label=f'{sel_lab}  ({lim} {meas_type}={sel_val} @ iter# {sel_x*log_int_list[i]})')
+                 label=f'{lim} {sel_lab}={sel_val} @ {xlabel}={sel_x*log_int_list[i]}')
     plt.legend(loc='best', ncol=1)
     if save_plot is not None:
         plt.savefig(save_plot, format='eps')
-    plt.show()
+    if show_plot:
+        plt.show()
+    else:
+        plt.close()
 
 ### Plot and compare various performance plots
 # def multi_perform_plot(pvals, rcParams=(8, 4), yscale='linear', 

@@ -11,7 +11,6 @@ sys.path.append('..')
 sys.path
 
 import matplotlib.pyplot as plt
-import numpy as numpy_np
 import pylab
 import math
 from IPython.display import clear_output
@@ -29,36 +28,19 @@ import torch
 
 ##### Utilities
 
-### Bit to list translation for data entry and state interpretation
-#   Note: PennyLane interprets qubits state in reverse order than Qiskit
-#         These functions are a copy of functions in Circuits.py
-
-### Transform int number to a list of bits, bit 0 comes first
-def bin_int_to_list(a, n_bits):
-    a = int(a)
-    a_list = [int(i) for i in f'{a:0{n_bits}b}']
-    #a_list.reverse()
-    return numpy_np.array(a_list)
-
-### Transform a list of bits to an int number, bit 0 comes first
-def bin_list_to_int(bin_list):
-    b = list(bin_list)
-    #b.reverse()
-    return int("".join(map(str, b)), base=2)
-
+from utils.PennyLane import *
 
 ### Draw a circuit
 #   Lots of styles apply, e.g. 'black_white', 'black_white_dark', 'sketch', 
 #     'pennylane', 'pennylane_sketch', 'sketch_dark', 'solarized_light', 'solarized_dark', 
 #     'default', we can even use 'rcParams' to redefine all attributes
 
-def draw_circuit(circuit, fontsize=20, style='pennylane', expansion_strategy=None, scale=None, title=None, decimals=2):
+def draw_circuit(circuit, fontsize=20, style='pennylane', 
+                 scale=None, title=None, decimals=2, level=None):
     def _draw_circuit(*args, **kwargs):
-        nonlocal circuit, fontsize, style, expansion_strategy, scale, title
+        nonlocal circuit, fontsize, style, scale, title, level
         qml.drawer.use_style(style)
-        if expansion_strategy is None:
-            expansion_strategy = circuit.expansion_strategy
-        fig, ax = qml.draw_mpl(circuit, decimals=decimals, expansion_strategy=expansion_strategy)(*args, **kwargs)
+        fig, ax = qml.draw_mpl(circuit, decimals=decimals, level=level)(*args, **kwargs)
         if scale is not None:
             dpi = fig.get_dpi()
             fig.set_dpi(dpi*scale)

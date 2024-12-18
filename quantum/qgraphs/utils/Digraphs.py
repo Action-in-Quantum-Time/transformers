@@ -96,13 +96,90 @@ def draw_weighted_digraph(G, attr_name, ax=None, weight_prec=3, font_size=12,
     plt.draw()
 
 
+### Draw two weighted digraphs
+def draw_weighted_digraphs(GS, titles=['Original digraph', 'Predicted digraph'],
+                           attr_name='weight', ax=None, weight_prec=3, font_size=12, 
+                           rcParams=(8, 6), draw_plot=True, save_plot=None):
+    # Get both graphs
+    G1 = GS[0]
+    G2 = GS[1]
+
+    # cstyle = "arc3,rad=0.3"
+    cstyle = "arc3"
+
+    # Plot graph
+    if rcParams is not None:
+        plt.rcParams["figure.figsize"] = rcParams
+
+    ### G1
+    # Set graph plotting parameter
+    pos = nx.shell_layout(G1)
+    # pos = nx.kamada_kawai_layout(G1)
+    # pos = nx.planar_layout(G1)
+    # pos = nx.spring_layout(G1)
+    plt.subplot(1, 2, 1)  # row 1, column 2, count 1
+    plt.title(titles[0])
+    nx.draw_networkx_nodes(G1, pos, ax=ax)
+    nx.draw_networkx_labels(G1, pos, font_size=font_size, ax=ax)
+    nx.draw_networkx_edges(G1, pos, edge_color="grey", ax=ax, connectionstyle=cstyle)
+
+    labels = {tuple(edge) : f"{np.round(attrs[attr_name], weight_prec)}" for *edge, attrs in G1.edges(data=True)}
+    
+    nx.draw_networkx_edge_labels(
+        G1,
+        pos,
+        labels,
+        label_pos=0.35,
+        font_color="blue",
+        bbox={"alpha": 0},
+        verticalalignment='baseline', # top, bottom, center, center_baseline
+        ax=ax,
+    )
+
+    ### G2
+    # Set graph plotting parameter
+    pos = nx.shell_layout(G1)
+    # pos = nx.kamada_kawai_layout(G1)
+    # pos = nx.planar_layout(G1)
+    # pos = nx.spring_layout(G1)
+    plt.subplot(1, 2, 2) # row 1, column 2, count 2
+    plt.title(titles[1])
+    nx.draw_networkx_nodes(G2, pos, ax=ax)
+    nx.draw_networkx_labels(G2, pos, font_size=font_size, ax=ax)
+    nx.draw_networkx_edges(G2, pos, edge_color="grey", ax=ax, connectionstyle=cstyle)
+
+    labels = {tuple(edge) : f"{np.round(attrs[attr_name], weight_prec)}" for *edge, attrs in G2.edges(data=True)}
+    
+    nx.draw_networkx_edge_labels(
+        G2,
+        pos,
+        labels,
+        label_pos=0.35,
+        font_color="blue",
+        bbox={"alpha": 0},
+        verticalalignment='baseline', # top, bottom, center, center_baseline
+        ax=ax,
+    )
+
+    plt.tight_layout(w_pad=3)
+    
+    # Final charting
+    if save_plot is not None:
+        os.makedirs(os.path.dirname(save_plot), exist_ok=True)
+        plt.savefig(save_plot, format='eps')
+    if draw_plot:
+        plt.draw()
+    else:
+        plt.close()
+
+
 ##### Graph saving and loading
 
 
 ### Saving of a graph to a file
 def save_digraph(G, fpath, vers=0):
     os.makedirs(os.path.dirname(fpath), exist_ok=True)
-    g_node_links = nx.node_link_data(G)
+    g_node_links = nx.node_link_data(G, edges="links")
     with open(f'{fpath}', 'w') as f:
         json.dump(g_node_links, f)
         f.close()
@@ -123,7 +200,7 @@ def load_digraph(fpath):
             with open(f'{fpath}', 'r') as f:
                 G_node_links = json.load(f)
                 f.close()
-            G = nx.node_link_graph(G_node_links)
+            G = nx.node_link_graph(G_node_links, edges='links')
             return G
 
 ### Convert a digraph to its adjacency matrix
@@ -133,7 +210,7 @@ def digraph_to_adjmat(G):
 
 ### Return digraph details
 def digraph_details(G):
-    return nx.node_link_data(G)
+    return nx.node_link_data(G, edges="links")
 
 
 ##### Graph generation
@@ -175,7 +252,7 @@ def digraph_adj_expand(w_adj):
 ### Prepare a quantum digraph for quantum modeling
 #   Convert an undirected graph into QGraph
 def digraph_expanded_and_weighed(g, method='rand'):
-    g_adj = nx.adjacency_matrix(g).todense()
+    g_adj = nx.adjacency_matrix(g).toarray() # todense()
     g_adj_expanded = digraph_adj_expand(g_adj)
     g_adj_weighed = digraph_adj_weigh(g_adj_expanded, method=method)
     g_new = nx.DiGraph(g_adj_weighed)
